@@ -1,0 +1,9 @@
+Note: These font files need to be properly licensed for your project. The files should be placed in:
+
+- public/fonts/Satoshi-Regular.woff2
+- public/fonts/Satoshi-Medium.woff2
+- public/fonts/Satoshi-Bold.woff2
+- public/fonts/IBMPlexMono-Regular.woff2
+- public/fonts/IBMPlexMono-Medium.woff2
+
+You can download IBM Plex Mono fonts from Google Fonts, and Satoshi fonts require licensing from the foundry.
