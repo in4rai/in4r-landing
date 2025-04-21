@@ -27,37 +27,37 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json();
-    const { name, email, message, subject } = body; // 'subject' is our honeypot field
+    const { name, email, message, subject } = body;
 
-    // --- Basic Spam Check (Honeypot) ---
+    // Honeypot check
     if (subject) {
-      // If the hidden 'subject' field is filled, it's likely a bot
-      console.log('Honeypot field filled, likely spam.');
-      // Return a success response to not alert the bot, but don't send the email
-      return NextResponse.json({ message: 'Message received.' });
+      console.log('Honeypot triggered');
+      return new Response(JSON.stringify({ message: 'Message received.' }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
     }
 
-    // --- Server-Side Validation ---
+    // Validation
     if (!name || !email || !message) {
-      return NextResponse.json(
-        { error: 'Missing required fields.' },
-        { status: 400 }
-      );
+      return new Response(JSON.stringify({ error: 'Missing required fields' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
     }
 
-    // Basic email format validation (consider a more robust library for production)
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      return NextResponse.json(
-        { error: 'Invalid email format.' },
-        { status: 400 }
-      );
+      return new Response(JSON.stringify({ error: 'Invalid email format' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
     }
 
-    // --- Send Email using Resend ---
+    // Send email
     const { data, error } = await resend.emails.send({
-      from: 'Contact Form <onboarding@resend.dev>', // Must be a verified domain in Resend (or onboarding@resend.dev for testing)
-      to: [receiverEmail], // The email address you want to receive messages at
+      from: 'Contact Form <onboarding@resend.dev>',
+      to: [receiverEmail],
       subject: `New Contact Form Submission from ${name}`,
       replyTo: email,
       html: `
@@ -70,21 +70,24 @@ export async function POST(request: Request) {
     });
 
     if (error) {
-      console.error('Error sending email:', error);
-      return NextResponse.json(
-        { error: 'Failed to send message.' },
-        { status: 500 }
-      );
+      console.error('Resend error:', error);
+      return new Response(JSON.stringify({ error: 'Failed to send message' }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      });
     }
 
-    console.log('Email sent successfully:', data);
-    return NextResponse.json({ message: 'Message sent successfully!' });
+    console.log('Email sent:', data);
+    return new Response(JSON.stringify({ message: 'Message sent successfully!' }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    });
 
   } catch (error) {
-    console.error('Error processing request:', error);
-    return NextResponse.json(
-      { error: 'An unexpected error occurred.' },
-      { status: 500 }
-    );
+    console.error('Server error:', error);
+    return new Response(JSON.stringify({ error: 'Internal server error' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 }
