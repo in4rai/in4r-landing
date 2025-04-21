@@ -71,11 +71,12 @@ export default function Header() {
             ))}
           </nav>
 
-          <button
+          <Link
+            href="#contact"
             className="inline-flex items-center justify-center px-5 py-2 border border-accent-cyan rounded-md text-accent-cyan bg-surface/50 hover:bg-accent-cyan/10 transition-all hidden md:flex"
           >
             Start a Prototype
-          </button>
+          </Link>
 
           {/* Mobile Navigation Toggle */}
           <button
@@ -104,11 +105,12 @@ export default function Header() {
                 {link.name}
               </Link>
             ))}
-            <button
+            <Link
+              href="#contact"
               className="inline-flex items-center justify-center px-5 py-2 border border-accent-cyan rounded-md text-accent-cyan bg-surface/50 hover:bg-accent-cyan/10 transition-all mt-4 w-full"
             >
               Start a Prototype
-            </button>
+            </Link>
           </div>
         </div>
       </div>
