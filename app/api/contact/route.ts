@@ -32,26 +32,26 @@ export async function POST(request: Request) {
     // Honeypot check
     if (subject) {
       console.log('Honeypot triggered');
-      return new Response(JSON.stringify({ message: 'Message received.' }), {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' },
-      });
+      return NextResponse.json(
+        { message: 'Message received.' },
+        { status: 200 }
+      );
     }
 
     // Validation
     if (!name || !email || !message) {
-      return new Response(JSON.stringify({ error: 'Missing required fields' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      });
+      return NextResponse.json(
+        { error: 'Missing required fields' },
+        { status: 400 }
+      );
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      return new Response(JSON.stringify({ error: 'Invalid email format' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      });
+      return NextResponse.json(
+        { error: 'Invalid email format' },
+        { status: 400 }
+      );
     }
 
     // Send email
@@ -71,23 +71,23 @@ export async function POST(request: Request) {
 
     if (error) {
       console.error('Resend error:', error);
-      return new Response(JSON.stringify({ error: 'Failed to send message' }), {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' },
-      });
+      return NextResponse.json(
+        { error: 'Failed to send message' },
+        { status: 500 }
+      );
     }
 
     console.log('Email sent:', data);
-    return new Response(JSON.stringify({ message: 'Message sent successfully!' }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return NextResponse.json(
+      { message: 'Message sent successfully!' },
+      { status: 200 }
+    );
 
   } catch (error) {
     console.error('Server error:', error);
-    return new Response(JSON.stringify({ error: 'Internal server error' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }
