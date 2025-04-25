@@ -107,14 +107,28 @@ export default function ContactSection() {
         throw new Error(`API Error (${response.status}): ${errorText.substring(0, 100)}...` || 'Failed to send message.');
       }
 
-      // Only parse JSON if the response was ok
-      const result = await response.json();
+      // Only parse JSON if the response was ok AND has the correct content type
+      const contentType = response.headers.get('content-type') || '';
+      if (contentType.includes('application/json')) {
+        try {
+          const result = await response.json();
+          console.log('API result:', result); // Log the result if parsing succeeds
+        } catch (parseError) {
+          console.warn('Could not parse JSON response, even though Content-Type was application/json:', parseError);
+          // Decide if you want to treat this as an error or just ignore the body
+        }
+      } else {
+        // Handle non-JSON responses if necessary, or just proceed
+        console.info('Received non-JSON response, skipping JSON parsing.');
+        // You might want to read response.text() here if needed
+        await response.text(); // Consume the response body to avoid issues
+      }
       // --- END CHANGE ---
 
-      // No changes needed below this line in the try block
+      // Proceed with success state regardless of whether JSON was parsed (as long as response.ok was true)
       setSubmitStatus({
         status: 'success',
-        message: 'Your message has been sent successfully!',
+        message: 'Your message has been sent successfully!', // Or a generic success message if no JSON body expected
       });
       setFormData({ name: '', email: '', message: '', subject: '' });
 
@@ -247,7 +261,8 @@ export default function ContactSection() {
                       : 'bg-red-500/20 text-red-400'
                   }`}
                 >
-                  {submitStatus.message}
+                  {/* Replace single quotes with HTML entity for JSX */}
+                  {typeof submitStatus.message === 'string' ? submitStatus.message.replace(/'/g, ''') : submitStatus.message}
                 </div>
               )}
             </div>
