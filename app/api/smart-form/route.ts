@@ -1,9 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server'; // Import NextRequest
 import { getSupabase } from '@/lib/getSupabase'; // Import the new function
 
-// Route segment config
-export const runtime = 'nodejs'; // Explicitly use Node.js runtime
-export const dynamic = 'force-dynamic'; // Disable caching for this route
+// Removed route segment config (runtime, dynamic)
 
 // Keep the simple GET handler for diagnostics
 export async function GET() { // Removed req: Request as it's not used
