@@ -1,13 +1,20 @@
-import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase'; // Corrected import path
+import { NextResponse, type NextRequest } from 'next/server'; // Import NextRequest
+import { getSupabase } from '@/lib/getSupabase'; // Import the new function
 
-// Add a simple GET handler for diagnostics
-export async function GET(req: Request) {
+// Route segment config
+export const runtime = 'nodejs'; // Explicitly use Node.js runtime
+export const dynamic = 'force-dynamic'; // Disable caching for this route
+
+// Keep the simple GET handler for diagnostics
+export async function GET() { // Removed req: Request as it's not used
   return NextResponse.json({ message: 'SmartForm API endpoint is active.' });
 }
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) { // Use NextRequest type
   try {
+    // Defer Supabase client creation until needed
+    // const supabase = getSupabase(); // Moved this down
+
     const body = await req.json();
 
     // Honeypot check
@@ -53,13 +60,16 @@ export async function POST(req: Request) {
       // For now, we allow empty message for contact/prototype based on form logic
     }
 
+    // Get Supabase client *only* if validation passes
+    const supabase = getSupabase();
 
     console.log('Attempting to insert into Supabase:', submissionData);
 
     const { error } = await supabase.from('submissions').insert(submissionData);
 
     if (error) {
-      console.error('Supabase insertion error:', error);
+      // Log the detailed Supabase error
+      console.error('Supabase insertion error:', error.message, 'Details:', error);
       return NextResponse.json({ error: `Database error: ${error.message}` }, { status: 500 });
     }
 
