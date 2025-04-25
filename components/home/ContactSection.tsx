@@ -93,25 +93,31 @@ export default function ContactSection() {
         body: JSON.stringify(formData),
       });
 
-      const result = await response.json();
-
+      // --- START CHANGE ---
       if (!response.ok) {
-        // Handle errors from the API (e.g., validation errors)
-        throw new Error(result.error || 'Failed to send message.');
+        // Try to get more specific error text from the response body
+        let errorText = 'Failed to send message.';
+        try {
+          errorText = await response.text(); // Read response as text if not ok
+          console.error('API Error Response Text:', errorText); // Log for debugging
+        } catch (textError) {
+          console.error('Could not read error response text:', textError);
+        }
+        // Throw an error using the text obtained or a fallback message
+        throw new Error(`API Error (${response.status}): ${errorText.substring(0, 100)}...` || 'Failed to send message.');
       }
 
+      // Only parse JSON if the response was ok
+      const result = await response.json();
+      // --- END CHANGE ---
+
+      // No changes needed below this line in the try block
       setSubmitStatus({
         status: 'success',
         message: 'Your message has been sent successfully!',
       });
+      setFormData({ name: '', email: '', message: '', subject: '' });
 
-      // Reset form, including honeypot
-      setFormData({
-        name: '',
-        email: '',
-        message: '',
-        subject: '',
-      });
     } catch (error: any) {
       console.error('Form submission error:', error);
       setSubmitStatus({
@@ -241,7 +247,7 @@ export default function ContactSection() {
                       : 'bg-red-500/20 text-red-400'
                   }`}
                 >
-                  {submitStatus.message}
+                  {submitStatus.message.replace(/'/g, ''')} {/* Escape single quotes */}
                 </div>
               )}
             </div>
