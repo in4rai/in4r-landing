@@ -1,6 +1,11 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase'; // Corrected import path
 
+// Add a simple GET handler for diagnostics
+export async function GET(req: Request) {
+  return NextResponse.json({ message: 'SmartForm API endpoint is active.' });
+}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
