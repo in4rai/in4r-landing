@@ -127,7 +127,7 @@ export default function ContactSection() {
     } finally {
       setIsSubmitting(false);
     }
-  };
+  }; // Added semicolon back
 
   return (
     <section id="contact" ref={sectionRef} className="py-20 md:py-32 bg-bg-main">
@@ -247,7 +247,7 @@ export default function ContactSection() {
                       : 'bg-red-500/20 text-red-400'
                   }`}
                 >
-                  {submitStatus.message.replace(/'/g, ''')} {/* Escape single quotes */}
+                  {submitStatus.message}
                 </div>
               )}
             </div>
